@@ -1,0 +1,34 @@
+V "GNAT Lib v2015"
+A -g
+A -O2
+A -gnatc
+P GP ZX
+
+RN
+RV NO_ELABORATION_CODE
+
+U measures%s		measures.ads		e82eea75 EE OO PK
+
+D measures.ads		20160515125948 e82eea75 measures%s
+D system.ads		20150506105330 100301f7 system%s
+X 1 measures.ads
+2K9*Measures 27l5 27e13
+7i4*MAX_USERID{integer} 8r43
+8I9*UserID<integer>
+11i4*MAX_BPM{integer} 12r40
+12I9*BPM<integer>
+15i4*MAX_FOOTSTEPS{integer} 16r45
+16I9*Footsteps<integer>
+19F9*Latitude<float> 23r16
+20F9*Longitude<float> 24r17
+21R9*GPSLocation 25e17
+23f10*Lat{19F9}
+24f10*Long{20F9}
+FD 1 measures.ads
+FS .1 2K9 measures
+FD 2 system.ads
+FX 1 measures.ads .1 measures
+F 7*4 measures__max_userid 8c43
+F 11*4 measures__max_bpm 12c40
+F 15*4 measures__max_footsteps 16c45
+
