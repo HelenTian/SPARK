@@ -6,7 +6,7 @@ is
    -- The type for user identities
    MAX_USERID : constant Integer := 100;   
    type UserID is new Integer range -1 .. MAX_USERID;
-   
+
    -- The type for heart rate: beats per minute
    MAX_BPM : constant Integer := 300;
    type BPM is new Integer range -1 .. MAX_BPM;
