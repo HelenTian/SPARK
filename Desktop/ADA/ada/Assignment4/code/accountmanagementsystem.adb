@@ -6,12 +6,15 @@ package body AccountManagementSystem
 is   
    procedure Init is
    begin
-      Users := (others => False);
-      Insurers := (others => UserID'First);
-      Friends := (others => UserID'First);
-      Vitals := (others => BPM'First);
-      MFootsteps := (others => Footsteps'First);
-      Locations := (others => (0.0, 0.0));
+--        Users := (others => False);
+--        -- Change -1 and 0 to true
+--        Users(UserID'First) := True;
+--        Users(MEmergency) := True;
+--        Insurers := (others => UserID'First);
+--        Friends := (others => UserID'First);
+--        Vitals := (others => BPM'First);
+--        MFootsteps := (others => Footsteps'First);
+--        Locations := (others => (0.0, 0.0));
       
       FriendFootstepPermission := (others => False);
       FriendLocationPermission := (others => False);
@@ -138,19 +141,18 @@ is
          return Footsteps'First;
       end if;
       
---        if (Users(Requester) = True and Users(TargetUser) = True and ((Requester =  TargetUser)
---           or(Friends(TargetUser) = Requester and FriendFootstepPermission(TargetUser) = True)
---           or(Insurers(TargetUser) = Requester and InsurerFootstepPermission(TargetUser) = True)
---           or(Requester = MEmergency and EmergencyFootstepPermission(TargetUser) = True))) then
---           
+--        if (Users(Requester) = True and Users(TargetUser) = True and ((Requester =  TargetUser))
+--         and ((Friends(TargetUser) = Requester and FriendFootstepPermission(TargetUser) = True)
+--         or(Insurers(TargetUser) = Requester and InsurerFootstepPermission(TargetUser) = True)
+--         or(Requester = MEmergency and EmergencyFootstepPermission(TargetUser) = True)))
+--        then     
 --           return MFootsteps(TargetUser);
---        elsif Users(Requester) = True and Users(TargetUser) = True then 
+--        else 
 --           return Footsteps'First;
-         
 --        end if;
       
-
-  --  end if;
+      
+--    end if;
    end ReadFootsteps;
    
    function ReadLocation(Requester : in UserID; TargetUser : in UserID)
@@ -219,16 +221,22 @@ is
   					Other : in UserID;
   					Allow : in Boolean) is
    begin
-      if Users(Wearer) = True and Users(Other) = True then
-         
+--        if Users(Wearer) = True and Users(Other) = True and Other /= UserID'First
+--        then
          if Friends(Wearer) = Other then
-            FriendFootstepPermission(Wearer) := Allow;
-         elsif Insurers(Wearer) = Other then
-            InsurerFootstepPermission(Wearer) := True; --Insurer's permission of Foostep should always be true
+         FriendFootstepPermission(Wearer) := Allow;
          elsif Other = MEmergency then
             EmergencyFootstepPermission(Wearer) := Allow;
+         elsif Insurers(Wearer) = Other then
+             --Insurer's permission of Foostep should always be true
+            if(Allow = True) then 
+               InsurerFootstepPermission(Wearer) := True;
+            elsif(Allow = False) then 
+               RemoveInsurer(Wearer);
+            end if;
+         
          end if;     
-      end if;
+--        end if;
    end UpdateFootstepsPermissions;
    
    procedure UpdateLocationPermissions(Wearer : in UserID;
@@ -253,8 +261,9 @@ is
                             NewLocation : in GPSLocation; 
                               NewVitals : in BPM) is
    begin
-      if Users(Wearer) = True then
-         if EmergencyVitalPermission(Wearer) = True and EmergencyLocationPermission(Wearer) = True then
+      if Users(Wearer) = True and Wearer /= UserID'First and Wearer /= MEmergency
+      then
+         if EmergencyVitalPermission(Wearer) = True then
             
             Emergency.ContactEmergency(Wearer,NewVitals,NewLocation);
             

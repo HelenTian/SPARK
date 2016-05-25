@@ -72,14 +72,15 @@ is
    procedure Init with 
      Post => 
    -- Set -1 and 0 to true to implicate that those two ID have been used
-       (for all I in Users'Range => (if(I /= UserID'First and I /= MEmergency)
-              then Users(I) = True else Users(I) = False )) and
-     (for all I in Friends'Range => Friends(I) = UserID'First) and
-     (for all I in Insurers'Range => Insurers(I) = UserID'First) and 
-     (for all I in Vitals'Range => Vitals(I) = BPM'First) and
-     (for all I in MFootsteps'Range => MFootsteps(I) = Footsteps'First) and
-     (for all I in Locations'Range => Locations(I) = (0.0, 0.0)) and
-     
+   
+--       (for all I in Users'Range => (if(I /= UserID'First and I /= MEmergency)
+--                then Users(I) = False else Users(I) = True )) and
+--       (for all I in Friends'Range => Friends(I) = UserID'First) and
+--       (for all I in Insurers'Range => Insurers(I) = UserID'First) and 
+--       (for all I in Vitals'Range => Vitals(I) = BPM'First) and
+--       (for all I in MFootsteps'Range => MFootsteps(I) = Footsteps'First) and
+--       (for all I in Locations'Range => Locations(I) = (0.0, 0.0)) and
+--       
      -- Initialize all variables we add : permissions and EmergencyRecordList 
 
      (for all I in FriendFootstepPermission'Range 
@@ -212,7 +213,7 @@ is
       and FriendFootstepPermission(TargetUser) = True)
    or (Requester=Insurers(TargetUser) 
       and InsurerFootstepPermission(TargetUser )= True))
-   then Footsteps(TargetUser) else Footsteps'First);
+   then MFootsteps(TargetUser) else Footsteps'First);
      
       
    function ReadLocation(Requester : in UserID; TargetUser : in UserID)
@@ -233,7 +234,7 @@ is
    				     Other : in UserID;
                                      Allow : in Boolean)
      with Pre => Wearer in Users'Range and Users(Wearer) = True and
-     Other in Users'Range and Users(Other) = True,
+     Other in Users'Range and Users(Other) = True and Other /= UserID'First,
      Post => (if (Other = Friends(Wearer)) then 
           FriendVitalPermission =
             FriendVitalPermission'Old'Update(Wearer => Allow) elsif
@@ -249,17 +250,17 @@ is
   					Other : in UserID;
                                         Allow : in Boolean)
      with Pre => Wearer in Users'Range and Users(Wearer) = True and
-     Other in Users'Range and Users(Other) = True,
+     Other in Users'Range and Users(Other) = True and Other /= UserID'First,
      
      Post => (if Other = Friends(Wearer) then 
           FriendFootstepPermission =
             FriendFootstepPermission'Old'Update(Wearer => Allow) elsif
      Other = MEmergency then 
         EmergencyFootstepPermission = 
-                    EmergencyFootstepPermission'Old'Update(Wearer => Allow) elsif
+             EmergencyFootstepPermission'Old'Update(Wearer => Allow) elsif
      Other = Insurers(Wearer) then 
           (if Allow = True then InsurerFootstepPermission = 
-                     InsurerFootstepPermission'Old'Update(Wearer => Allow) else
+                     InsurerFootstepPermission'Old'Update(Wearer => True) else
      (Insurers = Insurers'Old'Update(Wearer => UserID'First)
      and (InsurerVitalPermission = 
             InsurerVitalPermission'Old'Update(Wearer => False))
@@ -270,7 +271,7 @@ is
  				       Other : in UserID;
                                        Allow : in Boolean)   
      with Pre => Wearer in Users'Range and Users(Wearer) = True and
-     Other in Users'Range and Users(Other) = True,
+     Other in Users'Range and Users(Other) = True and Other /= UserID'First,
      
      Post => (if (Other = Friends(Wearer)) then 
           FriendLocationPermission =
@@ -286,13 +287,16 @@ is
                             NewLocation : in GPSLocation; 
                               NewVitals : in BPM)
      with Pre => Wearer in Users'Range and Users(Wearer) = True and
-     EmergencyVitalPermission(Wearer) = True and EMRecordIndex < Natural'Last,
+      Wearer /= UserID'First and Wearer /= MEmergency and 
+     EMRecordIndex < Natural'Last,
      
-     Post => EMRecordIndex = EMRecordIndex'Old + 1 and
+     Post =>
+       (if EmergencyVitalPermission(Wearer) = True then 
+                EMRecordIndex = EMRecordIndex'Old + 1 and
      EMRecordList = 
        EMRecordList'Old'Update(EMRecordIndex => (Wearer, NewVitals, NewLocation)) and
        Vitals = Vitals'Old'Update(Wearer => NewVitals) and
-       Locations = Locations'Old'Update(Wearer => NewLocation)
+       Locations = Locations'Old'Update(Wearer => NewLocation))
    ;
 
 end AccountManagementSystem;
