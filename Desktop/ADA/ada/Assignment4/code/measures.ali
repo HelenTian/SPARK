@@ -1,13 +1,19 @@
 V "GNAT Lib v2015"
-A -g
 A -O2
-A -gnatc
-P GP ZX
+A -mmacosx-version-min=10.11.4
+A -gnatA
+A -g
+A -mtune=core2
+A -fPIC
+A -feliminate-unused-debug-symbols
+P ZX
 
 RN
-RV NO_ELABORATION_CODE
+RV NO_FLOATING_POINT
+RV NO_IMPLEMENTATION_PRAGMAS
+RV SPARK_05
 
-U measures%s		measures.ads		e82eea75 EE OO PK
+U measures%s		measures.ads		e82eea75 NE OO PK
 
 D measures.ads		20160525021904 e82eea75 measures%s
 D system.ads		20150506105331 100301f7 system%s
@@ -24,11 +30,4 @@ X 1 measures.ads
 21R9*GPSLocation 25e17
 23f10*Lat{19F9}
 24f10*Long{20F9}
-FD 1 measures.ads
-FS .1 2K9 measures
-FD 2 system.ads
-FX 1 measures.ads .1 measures
-F 7*4 measures__max_userid 8c43
-F 11*4 measures__max_bpm 12c40
-F 15*4 measures__max_footsteps 16c45
 

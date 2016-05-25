@@ -1,0 +1,16 @@
+Analyzed 1 units
+in unit accountmanagementsystem, 14 subprograms and packages out of 14 analyzed
+  AccountManagementSystem at accountmanagementsystem.ads:9 flow analyzed (0 errors and 0 warnings) and proved (0 checks)
+  AccountManagementSystem.CreateUser at accountmanagementsystem.ads:45 flow analyzed (0 errors and 0 warnings) and proved (2 checks)
+  AccountManagementSystem.Init at accountmanagementsystem.ads:38 flow analyzed (0 errors and 0 warnings) and proved (7 checks)
+  AccountManagementSystem.ReadFriend at accountmanagementsystem.ads:64 flow analyzed (0 errors and 0 warnings) and proved (0 checks)
+  AccountManagementSystem.ReadInsurer at accountmanagementsystem.ads:53 flow analyzed (0 errors and 0 warnings) and proved (0 checks)
+  AccountManagementSystem.ReadVitals at accountmanagementsystem.ads:88 flow analyzed (0 errors and 0 warnings) and proved (0 checks)
+  AccountManagementSystem.ReadVitals_Alt at accountmanagementsystem.ads:96 flow analyzed (0 errors and 0 warnings) and proved (1 checks)
+  AccountManagementSystem.RemoveFriend at accountmanagementsystem.ads:67 flow analyzed (0 errors and 0 warnings) and proved (1 checks)
+  AccountManagementSystem.RemoveInsurer at accountmanagementsystem.ads:56 flow analyzed (0 errors and 0 warnings) and proved (1 checks)
+  AccountManagementSystem.SetFriend at accountmanagementsystem.ads:60 flow analyzed (0 errors and 0 warnings) and proved (1 checks)
+  AccountManagementSystem.SetInsurer at accountmanagementsystem.ads:49 flow analyzed (0 errors and 0 warnings) and proved (1 checks)
+  AccountManagementSystem.UpdateFootsteps at accountmanagementsystem.ads:75 flow analyzed (0 errors and 0 warnings) and proved (1 checks)
+  AccountManagementSystem.UpdateLocation at accountmanagementsystem.ads:80 flow analyzed (0 errors and 0 warnings) and proved (1 checks)
+  AccountManagementSystem.UpdateVitals at accountmanagementsystem.ads:71 flow analyzed (0 errors and 0 warnings) and proved (1 checks)

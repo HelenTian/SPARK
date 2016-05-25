@@ -41,7 +41,7 @@ is
    procedure SetInsurer(Wearer : in UserID; Insurer : in UserID) is
    begin   
       if(Users(Wearer) = True and Users(Insurer) = True) then    
-         if Insurer /= Friends(Wearer) and Insurer /= MEmergency and Insurer /=Wearer then          
+         if Insurer /= Friends(Wearer) and Insurer /= Emergency and Insurer /=Wearer then          
             Insurers(Wearer) := Insurer;
                    
             InsurerVitalPermission(Wearer) := False;            
@@ -70,7 +70,7 @@ is
    procedure SetFriend(Wearer : in UserID; Friend : in UserID) is
    begin
      if(Users(Wearer) = True and Users(Friend) = True) then
-      if Friend /= Insurers(Wearer) and Friend /= Wearer and Friend /= MEmergency then
+      if Friend /= Insurers(Wearer) and Friend /= Wearer and Friend /= Emergency then
             Friends(Wearer) := Friend;
             
             FriendVitalPermission(Wearer) := False;
@@ -102,17 +102,19 @@ is
    begin
 
    --   if (Users(Requester) = True and Users(TargetUser) = True) then
-      if Requester = TargetUser then         
-         return Vitals(TargetUser);        
-      elsif Friends(TargetUser) = Requester and FriendVitalPermission(TargetUser) = True then        
-         return Vitals(TargetUser);         
-      elsif Insurers(TargetUser) = Requester and InsurerVitalPermission(TargetUser) = True then         
-         return Vitals(TargetUser);       
-      elsif Requester = MEmergency and EmergencyVitalPermission(TargetUser) = True then      
-         return Vitals(TargetUser);
-      else
+         
+         if Friends(TargetUser) = Requester and FriendVitalPermission(TargetUser) = True then
+            return Vitals(TargetUser);
+         elsif Insurers(TargetUser) = Requester and InsurerVitalPermission(TargetUser) = True then
+            return Vitals(TargetUser);
+         elsif Requester = Emergency and EmergencyVitalPermission(TargetUser) = True then
+            return Vitals(TargetUser);
+         else
             return BPM'First;
-      end if;             
+         end if;
+         
+       --  return BPM'First;
+         
     --  end if;
 
    end ReadVitals;
@@ -120,36 +122,18 @@ is
    function ReadFootsteps(Requester : in UserID; TargetUser : in UserID) 
                            return Footsteps  is
    begin
-
+    --  if (Users(Requester) = True and Users(TargetUser) = True) then
+         if Friends(TargetUser) = Requester and FriendFootstepPermission(TargetUser) = True then
            
-      if Requester =  TargetUser then
-         return MFootsteps(TargetUser);
+            return MFootsteps(TargetUser);
+         elsif Insurers(TargetUser) = Requester and InsurerFootstepPermission(TargetUser) = True then
+            return MFootsteps(TargetUser);
+         elsif Requester = Emergency and EmergencyFootstepPermission(TargetUser) = True then
+            return MFootsteps(TargetUser);
+         else
+            return Footsteps'First;
+         end if;
          
-      elsif Friends(TargetUser) = Requester and FriendFootstepPermission(TargetUser) = True then
-         return MFootsteps(TargetUser);
-         
-      elsif Insurers(TargetUser) = Requester and InsurerFootstepPermission(TargetUser) = True then
-         return MFootsteps(TargetUser);
-         
-      elsif Requester = MEmergency and EmergencyFootstepPermission(TargetUser) = True then
-         return MFootsteps(TargetUser);
-         
-      else
-         return Footsteps'First;
-      end if;
-      
---        if (Users(Requester) = True and Users(TargetUser) = True and ((Requester =  TargetUser)
---           or(Friends(TargetUser) = Requester and FriendFootstepPermission(TargetUser) = True)
---           or(Insurers(TargetUser) = Requester and InsurerFootstepPermission(TargetUser) = True)
---           or(Requester = MEmergency and EmergencyFootstepPermission(TargetUser) = True))) then
---           
---           return MFootsteps(TargetUser);
---        elsif Users(Requester) = True and Users(TargetUser) = True then 
---           return Footsteps'First;
-         
---        end if;
-      
-
   --  end if;
    end ReadFootsteps;
    
@@ -157,19 +141,18 @@ is
                          return GPSLocation  is
    begin
     --  if (Users(Requester) = True and Users(TargetUser) = True) then
-      if Requester = TargetUser then
-         return Locations(TargetUser);
-         
-      elsif Friends(TargetUser) = Requester and FriendLocationPermission(TargetUser) = True then
-         return Locations(TargetUser);
-      elsif Insurers(TargetUser) = Requester and InsurerLocationPermission(TargetUser) = True then 
-         return Locations(TargetUser);
-      elsif Requester = MEmergency and EmergencyLocationPermission(TargetUser) = True then
-         return Locations(TargetUser);
-      else     
-         return (0.0,0.0);  
-      end if;
 
+         if Friends(TargetUser) = Requester and FriendLocationPermission(TargetUser) = True then
+           
+            return Locations(TargetUser);
+         elsif Insurers(TargetUser) = Requester and InsurerLocationPermission(TargetUser) = True then
+            return Locations(TargetUser);
+         elsif Requester = Emergency and EmergencyLocationPermission(TargetUser) = True then
+            return Locations(TargetUser);
+         else
+            return (0.0,0.0);
+         end if;
+         
    --   end if;
    end ReadLocation;
    
@@ -207,7 +190,7 @@ is
             FriendVitalPermission(Wearer) := Allow;
          elsif Insurers(Wearer) = Other then
             InsurerVitalPermission(Wearer) := Allow; 
-         elsif Other = MEmergency then
+         elsif Other = Emergency then
             EmergencyVitalPermission(Wearer) := Allow;
          end if;     
       end if;
@@ -225,7 +208,7 @@ is
             FriendFootstepPermission(Wearer) := Allow;
          elsif Insurers(Wearer) = Other then
             InsurerFootstepPermission(Wearer) := True; --Insurer's permission of Foostep should always be true
-         elsif Other = MEmergency then
+         elsif Other = Emergency then
             EmergencyFootstepPermission(Wearer) := Allow;
          end if;     
       end if;
@@ -241,7 +224,7 @@ is
             FriendLocationPermission(Wearer) := Allow;
          elsif Insurers(Wearer) = Other then
             InsurerLocationPermission(Wearer) := Allow;
-         elsif Other = MEmergency then
+         elsif Other = Emergency then
             EmergencyLocationPermission(Wearer) := Allow;
          end if;     
       end if;

@@ -1,0 +1,5 @@
+accountmanagementsystem.ads:75:08: medium: postcondition might fail[#0]
+accountmanagementsystem.ads:209:16: medium: postcondition might fail, requires ReadFootsteps'Result = (if Requester = TargetUser or Requester = 0 and EmergencyFootstepPermission (TargetUser) = true or Requester = Friends (TargetUser) and ... (...) = ... or ... then ... else ...[#4]
+accountmanagementsystem.ads:215:19: medium: range check might fail[#3]
+accountmanagementsystem.ads:254:14: medium: postcondition might fail[#1]
+accountmanagementsystem.ads:291:14: medium: postcondition might fail[#2]

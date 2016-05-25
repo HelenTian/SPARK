@@ -37,7 +37,7 @@ is
    Locations : LocationsArray;
    
    -- Emergency is always using 0
-   MEmergency : constant UserID := 0;
+   Emergency : constant UserID := 0;
    
    -- An array indicating relative permission for a user
    type PermissionArray is array( UserID ) of Boolean;
@@ -72,7 +72,7 @@ is
    procedure Init with 
      Post => 
    -- Set -1 and 0 to true to implicate that those two ID have been used
-       (for all I in Users'Range => (if(I /= UserID'First and I /= MEmergency)
+       (for all I in Users'Range => (if(I /= UserID'First and I /= Emergency)
               then Users(I) = True else Users(I) = False )) and
      (for all I in Friends'Range => Friends(I) = UserID'First) and
      (for all I in Insurers'Range => Insurers(I) = UserID'First) and 
@@ -120,7 +120,7 @@ is
      and Insurer in Users'Range and Users(Insurer) = True
      and Insurer /= Wearer
      and Insurer /= Friends(Wearer)
-     and Insurer /= MEmergency
+     and Insurer /= Emergency
      and Insurer /= UserID'First,
      Post => (Insurers = Insurers'Old'Update(Wearer => Insurer));
               
@@ -142,7 +142,7 @@ is
      and Friend in Users'Range and Users(Friend) = True
      and Friend /= Wearer
      and Friend /= Insurers(Wearer)
-     and Friend /= MEmergency
+     and Friend /= Emergency
      and Friend /= UserID'First,
      Post => Friends = Friends'Old'Update(Wearer => Friend);
               
@@ -193,7 +193,7 @@ is
      and Requester in Users'Range and Users(Requester) = True,
      
        Post => ReadVitals'Result = (if((Requester = TargetUser) or
-    (Requester = MEmergency and EmergencyVitalPermission(TargetUser) = True) 
+    (Requester = Emergency and EmergencyVitalPermission(TargetUser) = True) 
     or (Requester = Friends(TargetUser) and
        FriendVitalPermission(TargetUser) = True)
     or (Requester = Insurers(TargetUser) and
@@ -207,7 +207,7 @@ is
      and Requester in Users'Range and Users(Requester) = True,
      
        Post => ReadFootsteps'Result = (if((Requester = TargetUser) or
-   (Requester = MEmergency and EmergencyFootstepPermission(TargetUser) = True) or
+   (Requester = Emergency and EmergencyFootstepPermission(TargetUser) = True) or
    (Requester = Friends(TargetUser) 
       and FriendFootstepPermission(TargetUser) = True)
    or (Requester=Insurers(TargetUser) 
@@ -222,7 +222,7 @@ is
      and Requester in Users'Range and Users(Requester) = True,
      
        Post => ReadLocation'Result = (if((Requester = TargetUser) or
-   (Requester = MEmergency and EmergencyLocationPermission(TargetUser) = True) or
+   (Requester = Emergency and EmergencyLocationPermission(TargetUser) = True) or
    (Requester = Friends(TargetUser) and
       FriendLocationPermission(TargetUser) = True)
    or (Requester=Insurers(TargetUser) 
@@ -240,7 +240,7 @@ is
      (Other = Insurers(Wearer)) then 
           InsurerVitalPermission = 
             InsurerVitalPermission'Old'Update(Wearer => Allow) elsif
-     (Other = MEmergency) then 
+     (Other = Emergency) then 
         EmergencyVitalPermission = 
           EmergencyVitalPermission'Old'Update(Wearer => Allow));
    
@@ -254,7 +254,7 @@ is
      Post => (if Other = Friends(Wearer) then 
           FriendFootstepPermission =
             FriendFootstepPermission'Old'Update(Wearer => Allow) elsif
-     Other = MEmergency then 
+     Other = Emergency then 
         EmergencyFootstepPermission = 
                     EmergencyFootstepPermission'Old'Update(Wearer => Allow) elsif
      Other = Insurers(Wearer) then 
@@ -278,7 +278,7 @@ is
      (Other = Insurers(Wearer)) then 
           InsurerLocationPermission = 
             InsurerLocationPermission'Old'Update(Wearer => Allow) elsif
-     (Other = MEmergency) then 
+     (Other = Emergency) then 
         EmergencyLocationPermission = 
           EmergencyLocationPermission'Old'Update(Wearer => Allow));
 

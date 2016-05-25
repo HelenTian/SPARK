@@ -9,10 +9,10 @@ RV NO_ELABORATION_CODE
 
 U measures%s		measures.ads		e82eea75 EE OO PK
 
-D measures.ads		20160525021904 e82eea75 measures%s
-D system.ads		20150506105331 100301f7 system%s
+D measures.ads		20160515125948 e82eea75 measures%s
+D system.ads		20150506105330 100301f7 system%s
 X 1 measures.ads
-2K9*Measures 28l5 28e13
+2K9*Measures 27l5 27e13
 7i4*MAX_USERID{integer} 8r43
 8I9*UserID<integer>
 11i4*MAX_BPM{integer} 12r40
