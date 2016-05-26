@@ -65,9 +65,12 @@ is
    type EmergencyRecordList is
      array(Natural ) of EmergencyRecord;
    
+   --the latest Emergency record
    EMRecordIndex : Natural := Natural'First;
    
+   --the list of emergency record history
    EMRecordList : EmergencyRecordList;
+   
    -- Create and initialise the account management system
    procedure Init with 
      Post => 
@@ -103,7 +106,8 @@ is
       => EmergencyFootstepPermission(I) = False) and
      (for all I in EMRecordList'Range => 
       EMRecordList(I) = (UserID'First, BPM'First, (0.0, 0.0)) );
-     
+   
+   --this procedure is to create and initialise a new user
    procedure CreateUser(NewUser : out UserID) with
      Pre => LatestUser < UserID'Last,
      Post => 
@@ -116,6 +120,8 @@ is
      ( EmergencyVitalPermission =
         EmergencyVitalPermission'Old'Update(NewUser => True));
    
+   --this procedure is to set one user to be an insurer for a specific user and 
+   -- initialise related permissions
    procedure SetInsurer(Wearer : in UserID; Insurer : in UserID) with
      Pre => Wearer in Users'Range and Users(Wearer) = True
      and Insurer in Users'Range and Users(Insurer) = True
@@ -126,10 +132,12 @@ is
      and Insurer /= MEmergency
      and Insurer /= UserID'First,
      Post => (Insurers = Insurers'Old'Update(Wearer => Insurer));
-              
+          
+   --this function is to read one user's insurer
    function ReadInsurer(Wearer : in UserID) return UserID
    is (Insurers(Wearer));
 
+   --this procedure is to delete the insurer of one user and related permissions
    procedure RemoveInsurer(Wearer : in UserID) with
      Pre => Wearer in Users'Range and Users(Wearer) = True
      and Wearer /= UserID'First and Wearer /= MEmergency and 
@@ -141,6 +149,8 @@ is
      and (InsurerLocationPermission = 
             InsurerLocationPermission'Old'Update(Wearer => False));
 
+   --this procedure is to set one user to be a friend for a specific user and 
+   -- initialise related permissions
    procedure SetFriend(Wearer : in UserID; Friend : in UserID) with
      Pre => Wearer in Users'Range and Users(Wearer) = True
      and Wearer /= UserID'First
@@ -151,10 +161,12 @@ is
      and Friend /= MEmergency
      and Friend /= UserID'First,
      Post => Friends = Friends'Old'Update(Wearer => Friend);
-              
+         
+   --this function is to read one user's friend
    function ReadFriend(Wearer : in UserID) return UserID
    is (Friends(Wearer));
 
+   --this procedure is to delete the friend of one user and related permissions
    procedure RemoveFriend(Wearer : in UserID) with
      Pre => Wearer in Users'Range and Users(Wearer) = True 
      and Wearer /= UserID'First
@@ -169,6 +181,8 @@ is
      and FriendFootstepPermission =
        FriendFootstepPermission'Old'Update(Wearer => False);
 
+   --this procedure is to update one user's vital information
+   --by given new vital information
    procedure UpdateVitals(Wearer : in UserID; NewVitals : in BPM) with
      Pre => Wearer in Users'Range and Users(Wearer) = True
      and Wearer /= UserID'First
@@ -177,6 +191,8 @@ is
        
      Post => Vitals = Vitals'Old'Update(Wearer => NewVitals);
    
+   --this procedure is to update one user's footsteps information 
+   --by given new footsteps information
    procedure UpdateFootsteps(Wearer : in UserID; NewFootsteps : in Footsteps)
      with
        Pre => Wearer in Users'Range and Users(Wearer) = True
@@ -185,6 +201,8 @@ is
        and NewFootsteps /= Footsteps'First,
      Post => MFootsteps = MFootsteps'Old'Update(Wearer => NewFootsteps);
      
+   --this procedure is to update one user's location information 
+   --by given new location information
    procedure UpdateLocation(Wearer : in UserID; NewLocation : in GPSLocation) 
      with
        Pre => Wearer in Users'Range and Users(Wearer) = True
@@ -195,7 +213,7 @@ is
    -- An partial, incorrect specification.
    -- Note that there is no need for a corresponding body for this function. 
    -- These are best suited for functions that have simple control flow
-   --function ReadVitals(Requester : in UserID; TargetUser : in UserID) return BPM 
+   --function ReadVitals(Requester :in UserID; TargetUser :in UserID) return BPM 
    --is (if Friends(TargetUser) = Requester then
    --      Vitals(TargetUser)
    --    else BPM'First);
@@ -203,6 +221,10 @@ is
    -- An alternative specification using postconditions. These require package
    -- bodies, and are better suited to functions with non-trivial control flow,
    -- and are required for functions with preconditions
+   
+   
+   --this function is to show targetUser's vital information to requester user
+   --if he has related permission   
    function ReadVitals(Requester : in UserID; TargetUser : in UserID)
                            return BPM 
      with 
@@ -215,11 +237,15 @@ is
        Post => ReadVitals'Result = (if((Requester = TargetUser) or
     (Requester = MEmergency and EmergencyVitalPermission(TargetUser) = True) 
     or (Requester = Friends(TargetUser) and
-       FriendVitalPermission(TargetUser) = True)
+     FriendVitalPermission(TargetUser) = True)
+                                      
     or (Requester = Insurers(TargetUser) and
        InsurerVitalPermission(TargetUser)=True))
-    then Vitals(TargetUser) else BPM'First);
- 
+       then Vitals(TargetUser) else BPM'First);
+   
+   
+   --this function is to show targetUser's footstep information 
+   --to requester user if he has related permission 
    function ReadFootsteps(Requester : in UserID; TargetUser : in UserID) 
      return Footsteps
      with 
@@ -230,14 +256,16 @@ is
      and TargetUser /= MEmergency,
      
        Post => ReadFootsteps'Result = (if((Requester = TargetUser) or
-   (Requester = MEmergency and EmergencyFootstepPermission(TargetUser) = True) or
+   (Requester = MEmergency and EmergencyFootstepPermission(TargetUser)=True) or
    (Requester = Friends(TargetUser) 
       and FriendFootstepPermission(TargetUser) = True)
    or (Requester=Insurers(TargetUser) 
       and InsurerFootstepPermission(TargetUser )= True))
    then MFootsteps(TargetUser) else Footsteps'First);
      
-      
+   
+   --this function is to show targetUser's location information 
+   --to requester user if he has related permission      
    function ReadLocation(Requester : in UserID; TargetUser : in UserID)
      return GPSLocation
      with 
@@ -248,13 +276,16 @@ is
      and TargetUser /= MEmergency,
      
        Post => ReadLocation'Result = (if((Requester = TargetUser) or
-   (Requester = MEmergency and EmergencyLocationPermission(TargetUser) = True) or
+   (Requester = MEmergency and EmergencyLocationPermission(TargetUser)=True) or
    (Requester = Friends(TargetUser) and
       FriendLocationPermission(TargetUser) = True)
    or (Requester=Insurers(TargetUser) 
       and InsurerLocationPermission(TargetUser)=True))
    then Locations(TargetUser) else (0.0 , 0.0));
-        
+
+   
+   --this procedure is to update one user's permission of 
+   --its vatal information to another user by the boolean value 'allow'
    procedure UpdateVitalsPermissions(Wearer : in UserID; 
    				     Other : in UserID;
                                      Allow : in Boolean)
@@ -272,7 +303,8 @@ is
         EmergencyVitalPermission = 
           EmergencyVitalPermission'Old'Update(Wearer => Allow));
    
-
+   --this procedure is to update one user's permission of 
+   --its footstep information to another user by the boolean value 'allow'
    procedure UpdateFootstepsPermissions(Wearer : in UserID; 
   					Other : in UserID;
                                         Allow : in Boolean)
@@ -294,7 +326,10 @@ is
             InsurerVitalPermission'Old'Update(Wearer => False))
      and (InsurerLocationPermission = 
             InsurerLocationPermission'Old'Update(Wearer => False)))));
-     
+    
+   
+   --this procedure is to update one user's permission of 
+   --its Location information to another user by the boolean value 'allow'
    procedure UpdateLocationPermissions(Wearer : in UserID;
  				       Other : in UserID;
                                        Allow : in Boolean)   
@@ -311,6 +346,9 @@ is
         EmergencyLocationPermission = 
           EmergencyLocationPermission'Old'Update(Wearer => Allow));
 
+   
+   --this procedure is to contact emergency services 
+   --and storage the vital and laction information.
    procedure ContactEmergency(Wearer : in UserID; 
                             NewLocation : in GPSLocation; 
                               NewVitals : in BPM)
@@ -322,7 +360,8 @@ is
        (if EmergencyVitalPermission(Wearer) = True then 
                 EMRecordIndex = EMRecordIndex'Old + 1 and
      EMRecordList = 
-       EMRecordList'Old'Update(EMRecordIndex => (Wearer, NewVitals, NewLocation)) and
+       EMRecordList'Old'Update(EMRecordIndex => 
+                                          (Wearer, NewVitals, NewLocation)) and
        Vitals = Vitals'Old'Update(Wearer => NewVitals) and
        Locations = Locations'Old'Update(Wearer => NewLocation))
    ;
