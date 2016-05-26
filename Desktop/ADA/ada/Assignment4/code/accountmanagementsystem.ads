@@ -73,14 +73,14 @@ is
      Post => 
    -- Set -1 and 0 to true to implicate that those two ID have been used
    
---       (for all I in Users'Range => (if(I /= UserID'First and I /= MEmergency)
---                then Users(I) = False else Users(I) = True )) and
---       (for all I in Friends'Range => Friends(I) = UserID'First) and
---       (for all I in Insurers'Range => Insurers(I) = UserID'First) and 
---       (for all I in Vitals'Range => Vitals(I) = BPM'First) and
---       (for all I in MFootsteps'Range => MFootsteps(I) = Footsteps'First) and
---       (for all I in Locations'Range => Locations(I) = (0.0, 0.0)) and
---       
+     (for all I in Users'Range => (if(I /= UserID'First and I /= MEmergency)
+              then Users(I) = False else Users(I) = True )) and
+     (for all I in Friends'Range => Friends(I) = UserID'First) and
+     (for all I in Insurers'Range => Insurers(I) = UserID'First) and 
+     (for all I in Vitals'Range => Vitals(I) = BPM'First) and
+     (for all I in MFootsteps'Range => MFootsteps(I) = Footsteps'First) and
+     (for all I in Locations'Range => Locations(I) = (0.0, 0.0)) and
+
      -- Initialize all variables we add : permissions and EmergencyRecordList 
 
      (for all I in FriendFootstepPermission'Range 
@@ -119,6 +119,8 @@ is
    procedure SetInsurer(Wearer : in UserID; Insurer : in UserID) with
      Pre => Wearer in Users'Range and Users(Wearer) = True
      and Insurer in Users'Range and Users(Insurer) = True
+     and Wearer /= UserID'First
+     and Wearer /= MEmergency
      and Insurer /= Wearer
      and Insurer /= Friends(Wearer)
      and Insurer /= MEmergency
@@ -129,8 +131,9 @@ is
    is (Insurers(Wearer));
 
    procedure RemoveInsurer(Wearer : in UserID) with
-     Pre => Wearer in Users'Range and Users(Wearer) = True and 
-     Insurers(Wearer) /= UserID'First,
+     Pre => Wearer in Users'Range and Users(Wearer) = True
+     and Wearer /= UserID'First and Wearer /= MEmergency and 
+     Insurers(Wearer) /= UserID'First ,
      
      Post => (Insurers = Insurers'Old'Update(Wearer => UserID'First))
      and (InsurerVitalPermission = 
@@ -140,6 +143,8 @@ is
 
    procedure SetFriend(Wearer : in UserID; Friend : in UserID) with
      Pre => Wearer in Users'Range and Users(Wearer) = True
+     and Wearer /= UserID'First
+     and Wearer /= MEmergency
      and Friend in Users'Range and Users(Friend) = True
      and Friend /= Wearer
      and Friend /= Insurers(Wearer)
@@ -151,8 +156,10 @@ is
    is (Friends(Wearer));
 
    procedure RemoveFriend(Wearer : in UserID) with
-     Pre => Wearer in Users'Range and Users(Wearer) = True and
-     Friends(Wearer) /= UserID'First,
+     Pre => Wearer in Users'Range and Users(Wearer) = True 
+     and Wearer /= UserID'First
+     and Wearer /= MEmergency 
+     and Friends(Wearer) /= UserID'First,
      
      Post => (Friends = Friends'Old'Update(Wearer => UserID'First))
      and FriendVitalPermission =
@@ -163,17 +170,26 @@ is
        FriendFootstepPermission'Old'Update(Wearer => False);
 
    procedure UpdateVitals(Wearer : in UserID; NewVitals : in BPM) with
-     Pre => Wearer in Users'Range and Users(Wearer) = True,
+     Pre => Wearer in Users'Range and Users(Wearer) = True
+     and Wearer /= UserID'First
+     and Wearer /= MEmergency
+     and NewVitals /= BPM'First,
+       
      Post => Vitals = Vitals'Old'Update(Wearer => NewVitals);
    
    procedure UpdateFootsteps(Wearer : in UserID; NewFootsteps : in Footsteps)
      with
-     Pre => Wearer in Users'Range and Users(Wearer) = True,
+       Pre => Wearer in Users'Range and Users(Wearer) = True
+       and Wearer /= UserID'First
+       and Wearer /= MEmergency
+       and NewFootsteps /= Footsteps'First,
      Post => MFootsteps = MFootsteps'Old'Update(Wearer => NewFootsteps);
      
    procedure UpdateLocation(Wearer : in UserID; NewLocation : in GPSLocation) 
      with
-     Pre => Wearer in Users'Range and Users(Wearer) = True,
+       Pre => Wearer in Users'Range and Users(Wearer) = True
+       and Wearer /= UserID'First
+       and Wearer /= MEmergency,
      Post => Locations = Locations'Old'Update(Wearer => NewLocation);
      
    -- An partial, incorrect specification.
@@ -191,7 +207,10 @@ is
                            return BPM 
      with 
        Pre => TargetUser in Users'Range and Users(TargetUser) = True
-     and Requester in Users'Range and Users(Requester) = True,
+     and Requester in Users'Range and Users(Requester) = True
+     and Requester /= UserID'First
+     and TargetUser /= UserID'First
+     and TargetUser /= MEmergency,
      
        Post => ReadVitals'Result = (if((Requester = TargetUser) or
     (Requester = MEmergency and EmergencyVitalPermission(TargetUser) = True) 
@@ -204,8 +223,11 @@ is
    function ReadFootsteps(Requester : in UserID; TargetUser : in UserID) 
      return Footsteps
      with 
-       Pre => TargetUser in Users'Range and Users(TargetUser) = True
-     and Requester in Users'Range and Users(Requester) = True,
+          Pre => TargetUser in Users'Range and Users(TargetUser) = True
+     and Requester in Users'Range and Users(Requester) = True
+     and Requester /= UserID'First
+     and TargetUser /= UserID'First
+     and TargetUser /= MEmergency,
      
        Post => ReadFootsteps'Result = (if((Requester = TargetUser) or
    (Requester = MEmergency and EmergencyFootstepPermission(TargetUser) = True) or
@@ -219,8 +241,11 @@ is
    function ReadLocation(Requester : in UserID; TargetUser : in UserID)
      return GPSLocation
      with 
-       Pre => TargetUser in Users'Range and Users(TargetUser) = True
-     and Requester in Users'Range and Users(Requester) = True,
+    Pre => TargetUser in Users'Range and Users(TargetUser) = True
+     and Requester in Users'Range and Users(Requester) = True
+     and Requester /= UserID'First
+     and TargetUser /= UserID'First
+     and TargetUser /= MEmergency,
      
        Post => ReadLocation'Result = (if((Requester = TargetUser) or
    (Requester = MEmergency and EmergencyLocationPermission(TargetUser) = True) or
@@ -234,7 +259,9 @@ is
    				     Other : in UserID;
                                      Allow : in Boolean)
      with Pre => Wearer in Users'Range and Users(Wearer) = True and
-     Other in Users'Range and Users(Other) = True and Other /= UserID'First,
+     Other in Users'Range and Users(Other) = True and Other /= UserID'First
+     and Wearer /= UserID'First and Wearer /= MEmergency,
+     
      Post => (if (Other = Friends(Wearer)) then 
           FriendVitalPermission =
             FriendVitalPermission'Old'Update(Wearer => Allow) elsif
@@ -250,7 +277,8 @@ is
   					Other : in UserID;
                                         Allow : in Boolean)
      with Pre => Wearer in Users'Range and Users(Wearer) = True and
-     Other in Users'Range and Users(Other) = True and Other /= UserID'First,
+     Other in Users'Range and Users(Other) = True and Other /= UserID'First
+     and Wearer /= UserID'First and Wearer /= MEmergency,
      
      Post => (if Other = Friends(Wearer) then 
           FriendFootstepPermission =
@@ -271,8 +299,8 @@ is
  				       Other : in UserID;
                                        Allow : in Boolean)   
      with Pre => Wearer in Users'Range and Users(Wearer) = True and
-     Other in Users'Range and Users(Other) = True and Other /= UserID'First,
-     
+     Other in Users'Range and Users(Other) = True and Other /= UserID'First
+     and Wearer /= UserID'First and Wearer /= MEmergency,
      Post => (if (Other = Friends(Wearer)) then 
           FriendLocationPermission =
             FriendLocationPermission'Old'Update(Wearer => Allow) elsif
@@ -288,7 +316,7 @@ is
                               NewVitals : in BPM)
      with Pre => Wearer in Users'Range and Users(Wearer) = True and
       Wearer /= UserID'First and Wearer /= MEmergency and 
-     EMRecordIndex < Natural'Last,
+     EMRecordIndex < Natural'Last and NewVitals /= BPM'First,
      
      Post =>
        (if EmergencyVitalPermission(Wearer) = True then 
