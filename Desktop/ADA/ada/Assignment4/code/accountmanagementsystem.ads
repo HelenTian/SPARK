@@ -90,20 +90,20 @@ is
       => FriendFootstepPermission(I) = False) and 
      (for all I in FriendLocationPermission'Range 
       => FriendLocationPermission(I) = False) and
-     (for all I in FriendFootstepPermission'Range 
-      => FriendFootstepPermission(I) = False) and
+     (for all I in FriendVitalPermission'Range 
+      => FriendVitalPermission(I) = False) and
      (for all I in InsurerFootstepPermission'Range 
       => InsurerFootstepPermission(I) = True) and 
      (for all I in InsurerLocationPermission'Range 
       => InsurerLocationPermission(I) = False) and
-     (for all I in InsurerFootstepPermission'Range 
-      => InsurerFootstepPermission(I) = False) and
+     (for all I in InsurerVitalPermission'Range 
+      => InsurerVitalPermission(I) = False) and
      (for all I in EmergencyFootstepPermission'Range 
       => EmergencyFootstepPermission(I) = False) and 
      (for all I in EmergencyLocationPermission'Range 
       => EmergencyLocationPermission(I) = False) and
-     (for all I in EmergencyFootstepPermission'Range 
-      => EmergencyFootstepPermission(I) = False) and
+     (for all I in EmergencyVitalPermission'Range 
+      => EmergencyVitalPermission(I) = False) and
      (for all I in EMRecordList'Range => 
       EMRecordList(I) = (UserID'First, BPM'First, (0.0, 0.0)) );
    
