@@ -10,8 +10,8 @@ is
       -- Change -1 and 0 to true
       Users(UserID'First) := True;
       Users(MEmergency) := True;
-      Insurers := (others => UserID'First);
       Friends := (others => UserID'First);
+      Insurers := (others => UserID'First);
       Vitals := (others => BPM'First);
       MFootsteps := (others => Footsteps'First);
       Locations := (others => (0.0, 0.0));

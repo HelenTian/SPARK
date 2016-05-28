@@ -73,8 +73,8 @@ is
      Post => 
    -- Set -1 and 0 to true to implicate that those two ID have been used
    
-     (for all I in Users'Range => (if(I /= UserID'First and I /= MEmergency)
-              then Users(I) = False else Users(I) = True )) and
+     (for all I in Users'Range => (if(I = UserID'First or I = MEmergency)
+            then Users(I) = True else Users(I) = False )) and
      (for all I in Friends'Range => Friends(I) = UserID'First) and
      (for all I in Insurers'Range => Insurers(I) = UserID'First) and 
      (for all I in Vitals'Range => Vitals(I) = BPM'First) and
@@ -84,23 +84,23 @@ is
      -- Initialize all variables we add : permissions and EmergencyRecordList 
 
      (for all I in FriendFootstepPermission'Range 
-      => FriendFootstepPermission(I) = False) and 
+      => FriendFootstepPermission(I) = False) and
      (for all I in FriendLocationPermission'Range 
       => FriendLocationPermission(I) = False) and
-     (for all I in FriendFootstepPermission'Range 
-      => FriendFootstepPermission(I) = False) and
+     (for all I in FriendVitalPermission'Range 
+      => FriendVitalPermission(I) = False) and
      (for all I in InsurerFootstepPermission'Range 
       => InsurerFootstepPermission(I) = True) and 
      (for all I in InsurerLocationPermission'Range 
       => InsurerLocationPermission(I) = False) and
-     (for all I in InsurerFootstepPermission'Range 
-      => InsurerFootstepPermission(I) = False) and
+     (for all I in InsurerVitalPermission'Range 
+      => InsurerVitalPermission(I) = False) and
      (for all I in EmergencyFootstepPermission'Range 
       => EmergencyFootstepPermission(I) = False) and 
      (for all I in EmergencyLocationPermission'Range 
       => EmergencyLocationPermission(I) = False) and
-     (for all I in EmergencyFootstepPermission'Range 
-      => EmergencyFootstepPermission(I) = False) and
+     (for all I in EmergencyVitalPermission'Range 
+      => EmergencyVitalPermission(I) = False) and
      (for all I in EMRecordList'Range => 
       EMRecordList(I) = (UserID'First, BPM'First, (0.0, 0.0)) );
      
@@ -230,10 +230,10 @@ is
      and TargetUser /= MEmergency,
      
        Post => ReadFootsteps'Result = (if((Requester = TargetUser) or
-   (Requester = MEmergency and EmergencyFootstepPermission(TargetUser) = True) or
-   (Requester = Friends(TargetUser) 
+    (Requester = MEmergency and EmergencyFootstepPermission(TargetUser) = True)
+    or (Requester = Friends(TargetUser) 
       and FriendFootstepPermission(TargetUser) = True)
-   or (Requester=Insurers(TargetUser) 
+    or (Requester=Insurers(TargetUser) 
       and InsurerFootstepPermission(TargetUser )= True))
    then MFootsteps(TargetUser) else Footsteps'First);
      
